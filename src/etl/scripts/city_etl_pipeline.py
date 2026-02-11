@@ -19,7 +19,10 @@ from src.etl.config import CSV_FILE_PATH, DEFAULT_DUPLICATE_HANDLING
 from src.database import get_etl_db
 
 
-def run_city_etl_pipeline(duplicate_handling: Literal["skip", "replace"] = "skip") -> int:
+def run_city_etl_pipeline(
+    duplicate_handling: Literal["skip", "replace"] = "skip",
+    enable_geocoding: bool = False
+) -> int:
     """
     Exécute le pipeline ETL complet pour l'ingestion des communes.
 
@@ -32,6 +35,7 @@ def run_city_etl_pipeline(duplicate_handling: Literal["skip", "replace"] = "skip
         duplicate_handling: Stratégie de gestion des doublons
             - "skip": Ignorer les communes existantes (défaut)
             - "replace": Remplacer les communes existantes
+        enable_geocoding: Si True, active le géocodage des villes sans coordonnées
 
     Returns:
         Le nombre de communes chargées avec succès
@@ -45,8 +49,8 @@ def run_city_etl_pipeline(duplicate_handling: Literal["skip", "replace"] = "skip
     raw_data = extractor.read()
 
     # Étape 2: Transform - Nettoyage et normalisation des données
-    transformer = CityTransformer()
-    cities = transformer.transform(raw_data)
+    transformer = CityTransformer(enable_geocoding=enable_geocoding)
+    cities = transformer.transform(raw_data, enable_geocoding=enable_geocoding)
 
     # Étape 3: Load - Insertion en base de données
     db = get_etl_db()
@@ -92,10 +96,19 @@ Exemples d'utilisation:
         )
     )
 
+    parser.add_argument(
+        "--enable-geocoding",
+        action="store_true",
+        help="Active le géocodage des villes sans coordonnées via l'API Nominatim"
+    )
+
     args = parser.parse_args()
 
     try:
-        count = run_city_etl_pipeline(duplicate_handling=args.duplicate_handling)
+        count = run_city_etl_pipeline(
+            duplicate_handling=args.duplicate_handling,
+            enable_geocoding=args.enable_geocoding
+        )
         sys.exit(0)
     except Exception as e:
         print(f"Erreur lors de l'exécution du pipeline ETL: {e}", file=sys.stderr)

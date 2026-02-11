@@ -5,11 +5,12 @@ Ce module implémente un transformer qui extrait les communes uniques
 des données CSV et les transforme en objets CityData.
 """
 
-from typing import Iterator, Dict, Any
+from typing import Iterator, Dict, Any, Optional, Tuple, List
 
 from src.etl.transformers.base_transformer import BaseTransformer
 from src.etl.utils.data_models import CityData
 from src.etl.utils.csv_helpers import get_csv_value, normalize_name
+from src.etl.services.geocoding import GeocodingService, GeocodingResult
 
 
 class CityTransformer(BaseTransformer[CityData]):
@@ -22,13 +23,22 @@ class CityTransformer(BaseTransformer[CityData]):
     si elles sont disponibles dans le CSV.
     """
 
-    def __init__(self):
+    def __init__(self, enable_geocoding: bool = False):
         """
         Initialise le transformer de communes.
+
+        Args:
+            enable_geocoding: Si True, active le géocodage des villes sans coordonnées
         """
         super().__init__(component_name="city_transformer", entity_name="commune")
+        self.enable_geocoding = enable_geocoding
+        self.geocoding_service: Optional[GeocodingService] = None
 
-    def _extract_city_data(self, row: Dict[str, Any]) -> tuple[str, str, str] | None:
+        if self.enable_geocoding:
+            self.geocoding_service = GeocodingService()
+            self.logger.info("Service de géocodage activé")
+
+    def _extract_city_data(self, row: Dict[str, Any]) -> Optional[Tuple[str, str, str]]:
         """
         Extrait et valide les données de base d'une commune depuis une ligne CSV.
 
@@ -52,7 +62,7 @@ class CityTransformer(BaseTransformer[CityData]):
 
         return city_name, code_postal, department_name
 
-    def _normalize_city_data(self, city_name: str, code_postal: str, department_name: str) -> tuple[str, str, str] | None:
+    def _normalize_city_data(self, city_name: str, code_postal: str, department_name: str) -> Optional[Tuple[str, str, str]]:
         """
         Normalise les données de la commune.
 
@@ -77,7 +87,7 @@ class CityTransformer(BaseTransformer[CityData]):
 
         return normalized_name, normalized_code, normalized_dept
 
-    def _extract_coordinates(self, row: Dict[str, Any], normalized_name: str) -> tuple[float | None, float | None]:
+    def _extract_coordinates(self, row: Dict[str, Any], normalized_name: str) -> Tuple[Optional[float], Optional[float]]:
         """
         Extrait les coordonnées GPS depuis une ligne CSV.
 
@@ -104,17 +114,45 @@ class CityTransformer(BaseTransformer[CityData]):
 
         return latitude, longitude
 
-    def transform(self, data: Iterator[Dict[str, Any]]) -> list[CityData]:
+    def _geocode_city(self, city_name: str, code_postal: str) -> Tuple[Optional[float], Optional[float]]:
+        """
+        Géocode une ville en utilisant le service de géocodage.
+
+        Args:
+            city_name: Nom de la ville
+            code_postal: Code postal
+
+        Returns:
+            Tuple (latitude, longitude) ou (None, None) si le géocodage échoue
+        """
+        if not self.geocoding_service:
+            return None, None
+
+        result: Optional[GeocodingResult] = self.geocoding_service.geocode(city_name, code_postal)
+
+        if result:
+            self.logger.info(
+                f"Géocodage réussi pour {city_name} ({code_postal}): "
+                f"{result.latitude}, {result.longitude} (source: {result.source})"
+            )
+            return result.latitude, result.longitude
+        else:
+            self.logger.warning(f"Échec du géocodage pour {city_name} ({code_postal})")
+            return None, None
+
+    def transform(self, data: Iterator[Dict[str, Any]], enable_geocoding: bool = False) -> List[CityData]:
         """
         Extrait les communes uniques des données CSV.
 
         Cette méthode parcourt toutes les lignes du CSV pour extraire
         les communes uniques (basées sur le nom + code postal).
         Les noms sont normalisés en majuscules. Les coordonnées GPS
-        sont extraites si disponibles.
+        sont extraites si disponibles dans le CSV, sinon le géocodage
+        est utilisé si activé.
 
         Args:
             data: Un itérateur de dictionnaires représentant les lignes du CSV
+            enable_geocoding: Si True, active le géocodage des villes sans coordonnées
 
         Returns:
             Une liste de CityData représentant les communes uniques
@@ -126,7 +164,7 @@ class CityTransformer(BaseTransformer[CityData]):
 
         # Utiliser un dictionnaire pour stocker les communes uniques
         # Clé: (nom_normalisé, code_postal)
-        cities_dict: dict[tuple[str, str], CityData] = {}
+        cities_dict: Dict[Tuple[str, str], CityData] = {}
 
         # Parcourir les données pour extraire les communes uniques
         for row in data:
@@ -145,8 +183,17 @@ class CityTransformer(BaseTransformer[CityData]):
             # Créer la clé unique pour la commune (nom + code postal)
             city_key = (normalized_name, normalized_code)
 
-            # Extraire les coordonnées GPS si disponibles
+            # Extraire les coordonnées GPS si disponibles dans le CSV
             latitude, longitude = self._extract_coordinates(row, normalized_name)
+
+            # Si les coordonnées ne sont pas disponibles dans le CSV et que le géocodage est activé
+            if latitude is None or longitude is None:
+                if enable_geocoding or self.enable_geocoding:
+                    # Utiliser le nom original (avant normalisation) pour le géocodage
+                    geocoded_lat, geocoded_lon = self._geocode_city(city_name, code_postal)
+                    if geocoded_lat is not None and geocoded_lon is not None:
+                        latitude = geocoded_lat
+                        longitude = geocoded_lon
 
             # Ajouter la commune si elle n'existe pas déjà
             if city_key not in cities_dict:

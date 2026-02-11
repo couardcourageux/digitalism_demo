@@ -56,9 +56,6 @@ class CityLoader(BaseLoader[CityData]):
 
         Returns:
             Dictionnaire des départements indexés par code
-
-        Raises:
-            ValueError: Si un département n'est pas trouvé
         """
         # Récupérer tous les codes départements uniques nécessaires
         code_departements = set()
@@ -71,12 +68,11 @@ class CityLoader(BaseLoader[CityData]):
         if code_departements:
             departments = self.department_repository.get_by_codes(list(code_departements))
 
-            # Vérifier que tous les départements existent
+            # Avertir si certains départements n'existent pas (ne pas lever d'erreur)
             missing_departments = code_departements - set(departments.keys())
             if missing_departments:
-                error_msg = f"Départements non trouvés: {', '.join(missing_departments)}"
-                self.logger.error(error_msg)
-                raise ValueError(error_msg)
+                warning_msg = f"Départements non trouvés (ignorés): {', '.join(missing_departments)}"
+                self.logger.warning(warning_msg)
 
         return departments
 
@@ -92,8 +88,16 @@ class CityLoader(BaseLoader[CityData]):
             Liste des dictionnaires de communes à traiter
         """
         cities_to_process = []
+        skipped_no_dept = 0
+        
         for city_data in data:
             code_departement = City.calculate_department_from_postal_code(city_data.code_postal)
+            
+            # Vérifier que le département existe
+            if code_departement not in departments:
+                skipped_no_dept += 1
+                continue
+            
             department_id = departments[code_departement].id
 
             city_dict = {
@@ -109,6 +113,9 @@ class CityLoader(BaseLoader[CityData]):
                 city_dict["longitude"] = city_data.longitude
 
             cities_to_process.append(city_dict)
+        
+        if skipped_no_dept > 0:
+            self.logger.warning(f"{skipped_no_dept} commune(s) ignorée(s) car le département n'existe pas")
 
         return cities_to_process
 
@@ -122,13 +129,19 @@ class CityLoader(BaseLoader[CityData]):
         Returns:
             Nombre de communes créées
         """
+        # Charger toutes les villes existantes en une seule requête pour optimiser
+        from sqlalchemy import select
+        stmt = select(City).where(City.deleted_at.is_(None))
+        existing_cities = list(self.db.execute(stmt).scalars().all())
+        
+        # Créer un dictionnaire pour une recherche rapide
+        existing_dict = {(c.name, c.code_postal): c for c in existing_cities}
+        
         count = 0
         skipped = 0
         for city_dict in cities_to_process:
-            existing = self.city_repository.get_by_name_and_postal_code(
-                city_dict["name"], city_dict["code_postal"]
-            )
-            if existing:
+            key = (city_dict["name"], city_dict["code_postal"])
+            if key in existing_dict:
                 skipped += 1
             else:
                 self.city_repository.create(city_dict)
@@ -146,14 +159,21 @@ class CityLoader(BaseLoader[CityData]):
         Returns:
             Nombre total de communes traitées (créées + mises à jour)
         """
+        # Charger toutes les villes existantes en une seule requête pour optimiser
+        from sqlalchemy import select
+        stmt = select(City).where(City.deleted_at.is_(None))
+        existing_cities = list(self.db.execute(stmt).scalars().all())
+        
+        # Créer un dictionnaire pour une recherche rapide
+        existing_dict = {(c.name, c.code_postal): c for c in existing_cities}
+        
         count = 0
         updated = 0
         for city_dict in cities_to_process:
-            existing = self.city_repository.get_by_name_and_postal_code(
-                city_dict["name"], city_dict["code_postal"]
-            )
-            if existing:
+            key = (city_dict["name"], city_dict["code_postal"])
+            if key in existing_dict:
                 # Mettre à jour la commune existante
+                existing = existing_dict[key]
                 update_data = CityUpdate(**city_dict)
                 self.city_repository.update(existing, update_data)
                 updated += 1

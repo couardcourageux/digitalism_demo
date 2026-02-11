@@ -10,6 +10,10 @@ class DigitalismSettings(BaseSettings):
     DATABASE_PASSWORD: str
 
     CSV_DATA_PATH: str = "data/csv"
+    
+    # Configuration Nominatim pour le géocodage
+    NOMINATIM_URL: str = "http://localhost:8080"
+    NOMINATIM_USER_AGENT: str = "digitalism-fastapi/1.0 (contact:your@email.com)"
 
     @field_validator('DATABASE_URL')
     @classmethod

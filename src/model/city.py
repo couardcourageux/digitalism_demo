@@ -104,8 +104,10 @@ class City(Base):
         if code_postal.startswith("97") or code_postal.startswith("98"):
             return code_postal[:3]
 
-        # Cas général: les 2 premiers chiffres
-        return code_postal[:2]
+        # Cas général: les 2 premiers chiffres, sans zéro à gauche
+        # Pour les codes département comme "01", on renvoie "1"
+        code = code_postal[:2]
+        return str(int(code))
 
     def __repr__(self) -> str:
         return f"<City(id={self.id}, name='{self.name}', department_id={self.department_id})>"

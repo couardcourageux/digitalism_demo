@@ -8,9 +8,11 @@ et du nettoyage des données extraites avant leur chargement.
 from src.etl.transformers.base_transformer import BaseTransformer
 from src.etl.transformers.region_transformer import RegionTransformer
 from src.etl.transformers.department_transformer import DepartmentTransformer
+from src.etl.transformers.city_transformer import CityTransformer
 
 __all__ = [
     "BaseTransformer",
     "RegionTransformer",
     "DepartmentTransformer",
+    "CityTransformer",
 ]

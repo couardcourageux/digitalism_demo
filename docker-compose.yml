@@ -37,6 +37,30 @@ services:
     networks:
       - digitalism_network
 
+  nominatim:
+    image: mediagis/nominatim:4.5
+    container_name: digitalism_nominatim
+    environment:
+      PBF_URL: https://download.geofabrik.de/europe/france-latest.osm.pbf
+      REPLICATION_URL: https://download.geofabrik.de/europe/france-updates
+      REPLICATION_UPDATE_INTERVAL: 86400
+      REPLICATION_RECHECK_INTERVAL: 900
+      NOMINATIM_PASSWORD: nominatim
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data/docker/nominatim:/var/lib/postgresql/14/main
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/status || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 30
+      start_period: 600s
+    restart: always
+    networks:
+      - digitalism_network
+    shm_size: 1gb
+
 networks:
   digitalism_network:
     driver: bridge

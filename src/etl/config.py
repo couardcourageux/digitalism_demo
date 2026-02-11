@@ -8,6 +8,10 @@ y compris les chemins des fichiers, l'encodage et les paramètres de traitement.
 from pathlib import Path
 from typing import Final, Literal
 
+from src.config import get_settings
+
+settings = get_settings()
+
 
 # Chemins des fichiers
 DATA_DIR: Final[Path] = Path("data")
@@ -44,3 +48,17 @@ DEFAULT_DUPLICATE_HANDLING: Final[Literal["skip", "replace"]] = "skip"
 # Logging
 LOG_LEVEL: Final[str] = "INFO"
 LOG_FORMAT: Final[str] = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+
+# Configuration Nominatim
+# URL de base de l'API Nominatim (peut être configurée via variable d'environnement)
+NOMINATIM_BASE_URL: str = settings.NOMINATIM_URL
+# User-Agent pour les requêtes HTTP (requis par la politique d'utilisation de Nominatim)
+NOMINATIM_USER_AGENT: str = settings.NOMINATIM_USER_AGENT
+# Rate limiting: délai minimum entre les requêtes en secondes
+NOMINATIM_RATE_LIMIT: Final[float] = 1.0  # 1 seconde entre les requêtes
+# Chemin du fichier de cache pour les résultats de géocodage
+NOMINATIM_CACHE_FILE: Final[Path] = DATA_DIR / "cache" / "geocoding_cache.json"
+# Nombre maximum de tentatives en cas d'erreur
+NOMINATIM_MAX_RETRIES: Final[int] = 3
+# Délai entre les tentatives (en secondes)
+NOMINATIM_RETRY_DELAY: Final[float] = 2.0
