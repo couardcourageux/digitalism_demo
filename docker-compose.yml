@@ -61,6 +61,44 @@ services:
       - digitalism_network
     shm_size: 1gb
 
+  fastapi:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: digitalism-fastapi
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      - ENVIRONMENT=${ENVIRONMENT:-development}
+      - UVICORN_WORKERS=${UVICORN_WORKERS:-4}
+      - UVICORN_HOST=${UVICORN_HOST:-0.0.0.0}
+      - UVICORN_PORT=${UVICORN_PORT:-8000}
+      - UVICORN_LOG_LEVEL=${UVICORN_LOG_LEVEL:-info}
+      - CSV_DATA_PATH=${CSV_DATA_PATH:-/app/data/csv}
+      - NOMINATIM_URL=${NOMINATIM_URL:-http://nominatim:8080}
+      - NOMINATIM_USER_AGENT=${NOMINATIM_USER_AGENT:-digitalism-fastapi}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      nominatim:
+        condition: service_started
+    networks:
+      - digitalism_network
+    volumes:
+      - ./data:/app/data:ro
+      - ./cache:/app/cache
+      - ./logs:/app/logs
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
 networks:
   digitalism_network:
     driver: bridge
