@@ -1,0 +1,161 @@
+"""initial migration
+
+Crée les tables initiales de la base de données :
+- regions : Stocke les régions administratives
+- departments : Stocke les départements avec leur région associée
+- cities : Stocke les villes avec leur département et coordonnées géographiques
+
+Revision ID: 06d3a879a5a1
+Revises:
+Create Date: 2026-02-10 18:39:09.043107
+
+"""
+from typing import Sequence, Union
+
+from alembic import op
+import sqlalchemy as sa
+
+
+# revision identifiers, used by Alembic.
+revision: str = '06d3a879a5a1'
+down_revision: Union[str, None] = None
+branch_labels: Union[str, Sequence[str], None] = None
+depends_on: Union[str, Sequence[str], None] = None
+
+
+# ============================================================================
+# Fonctions auxiliaires pour la création de tables
+# ============================================================================
+
+def create_regions_table() -> None:
+    """Crée la table regions."""
+    op.create_table(
+        'regions',
+        sa.Column('name', sa.String(length=100), nullable=False),
+        sa.Column('id', sa.Integer(), nullable=False),
+        sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
+        sa.Column('updated_at', sa.DateTime(timezone=True), nullable=False),
+        sa.Column('deleted_at', sa.DateTime(timezone=True), nullable=True),
+        sa.PrimaryKeyConstraint('id')
+    )
+
+
+def create_departments_table() -> None:
+    """Crée la table departments."""
+    op.create_table(
+        'departments',
+        sa.Column('name', sa.String(length=100), nullable=False),
+        sa.Column('region_id', sa.Integer(), nullable=False),
+        sa.Column('id', sa.Integer(), nullable=False),
+        sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
+        sa.Column('updated_at', sa.DateTime(timezone=True), nullable=False),
+        sa.Column('deleted_at', sa.DateTime(timezone=True), nullable=True),
+        sa.ForeignKeyConstraint(['region_id'], ['regions.id']),
+        sa.PrimaryKeyConstraint('id')
+    )
+
+
+def create_cities_table() -> None:
+    """Crée la table cities avec ses contraintes et index."""
+    op.create_table(
+        'cities',
+        sa.Column('name', sa.String(length=100), nullable=False),
+        sa.Column('department_id', sa.Integer(), nullable=False),
+        sa.Column('latitude', sa.Float(), nullable=True),
+        sa.Column('longitude', sa.Float(), nullable=True),
+        sa.Column('id', sa.Integer(), nullable=False),
+        sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
+        sa.Column('updated_at', sa.DateTime(timezone=True), nullable=False),
+        sa.Column('deleted_at', sa.DateTime(timezone=True), nullable=True),
+        sa.CheckConstraint(
+            'latitude IS NULL OR (latitude >= -90 AND latitude <= 90)',
+            name='check_latitude_range'
+        ),
+        sa.CheckConstraint(
+            'longitude IS NULL OR (longitude >= -180 AND longitude <= 180)',
+            name='check_longitude_range'
+        ),
+        sa.ForeignKeyConstraint(['department_id'], ['departments.id']),
+        sa.PrimaryKeyConstraint('id')
+    )
+
+
+def create_cities_indexes() -> None:
+    """Crée les index sur la table cities."""
+    # Note: Les index idx_city_name, idx_city_code_postal et idx_city_department_id
+    # seront créés par la migration add_code_departement_to_department
+    # Seul l'index idx_city_department_id est créé ici pour l'instant
+    op.create_index('idx_city_department_id', 'cities', ['department_id'])
+
+
+# ============================================================================
+# Fonctions auxiliaires pour la suppression de tables
+# ============================================================================
+
+def drop_cities_indexes() -> None:
+    """Supprime les index de la table cities."""
+    # Note: Les index idx_city_name, idx_city_code_postal et idx_city_department_id
+    # sont supprimés par la migration add_code_departement_to_department
+    # Seul l'index idx_city_department_id est supprimé ici pour l'instant
+    op.execute('DROP INDEX IF EXISTS idx_city_department_id')
+
+
+def drop_cities_table() -> None:
+    """Supprime la table cities."""
+    op.drop_table('cities')
+
+
+def drop_departments_table() -> None:
+    """Supprime la table departments."""
+    op.drop_table('departments')
+
+
+def drop_regions_table() -> None:
+    """Supprime la table regions."""
+    op.drop_table('regions')
+
+
+# ============================================================================
+# Fonctions de migration Alembic
+# ============================================================================
+
+def upgrade() -> None:
+    """
+    Crée toutes les tables initiales de la base de données.
+
+    L'ordre de création est important pour respecter les contraintes de clé étrangère :
+    1. regions (pas de dépendances)
+    2. departments (dépend de regions)
+    3. cities (dépend de departments)
+    """
+    # ### commands auto generated by Alembic - please adjust! ###
+
+    # Création des tables dans l'ordre des dépendances
+    create_regions_table()
+    create_departments_table()
+    create_cities_table()
+
+    # Création des index sur la table cities
+    create_cities_indexes()
+
+    # ### end Alembic commands ###
+
+
+def downgrade() -> None:
+    """
+    Supprime toutes les tables de la base de données.
+
+    L'ordre de suppression est important pour respecter les contraintes de clé étrangère :
+    1. cities (dépend de departments)
+    2. departments (dépend de regions)
+    3. regions (pas de dépendances)
+    """
+    # ### commands auto generated by Alembic - please adjust! ###
+
+    # Suppression dans l'ordre inverse de la création
+    drop_cities_indexes()
+    drop_cities_table()
+    drop_departments_table()
+    drop_regions_table()
+
+    # ### end Alembic commands ###
