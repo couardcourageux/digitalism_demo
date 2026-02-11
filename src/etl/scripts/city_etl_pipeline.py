@@ -16,12 +16,13 @@ from src.etl.extractors.csv_reader import CSVReader
 from src.etl.transformers.city_transformer import CityTransformer
 from src.etl.loaders.city_loader import CityLoader
 from src.etl.config import CSV_FILE_PATH, DEFAULT_DUPLICATE_HANDLING
+from src.etl.services import GeoApiService
 from src.database import get_etl_db
 
 
 def run_city_etl_pipeline(
     duplicate_handling: Literal["skip", "replace"] = "skip",
-    enable_geocoding: bool = False
+    enable_geocoding: bool = False,
 ) -> int:
     """
     Exécute le pipeline ETL complet pour l'ingestion des communes.
@@ -49,7 +50,15 @@ def run_city_etl_pipeline(
     raw_data = extractor.read()
 
     # Étape 2: Transform - Nettoyage et normalisation des données
-    transformer = CityTransformer(enable_geocoding=enable_geocoding)
+    # Créer le service de géocodage si nécessaire
+    geocoding_service = None
+    if enable_geocoding:
+        geocoding_service = GeoApiService()
+
+    transformer = CityTransformer(
+        enable_geocoding=enable_geocoding,
+        geocoding_service=geocoding_service
+    )
     cities = transformer.transform(raw_data, enable_geocoding=enable_geocoding)
 
     # Étape 3: Load - Insertion en base de données
@@ -99,7 +108,7 @@ Exemples d'utilisation:
     parser.add_argument(
         "--enable-geocoding",
         action="store_true",
-        help="Active le géocodage des villes sans coordonnées via l'API Nominatim"
+        help="Active le géocodage des villes sans coordonnées"
     )
 
     args = parser.parse_args()

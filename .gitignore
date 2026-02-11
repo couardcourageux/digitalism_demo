@@ -185,7 +185,7 @@ uv.lock
 # Docker et données conteneurisées
 # ============================================
 # Volumes Docker
-data/
+data/docker
 docker-data/
 docker-volumes/
 *.log

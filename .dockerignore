@@ -79,7 +79,7 @@ plans/
 import.style/
 
 # Alembic (sera copié séparément si nécessaire)
-alembic/versions/*.py
+# alembic/versions/*.py  # Commenté pour permettre la copie des fichiers de migration
 
 # Autres
 *.tmp

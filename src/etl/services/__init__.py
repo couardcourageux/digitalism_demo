@@ -5,6 +5,6 @@ Ce package contient les services utilitaires utilisés dans le pipeline ETL,
 comme le service de géocodage.
 """
 
-from src.etl.services.geocoding import GeocodingService, GeocodingResult
+from src.etl.services.geo_api import GeoApiService, GeocodingResult
 
-__all__ = ["GeocodingService", "GeocodingResult"]
+__all__ = ["GeoApiService", "GeocodingResult"]

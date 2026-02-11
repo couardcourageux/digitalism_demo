@@ -1,0 +1,498 @@
+{
+  "regions": [
+    {
+      "nom": "AUVERGNE-RHÔNE-ALPES",
+      "departements": [
+        {
+          "code": "1",
+          "nom": "AIN"
+        },
+        {
+          "code": "15",
+          "nom": "CANTAL"
+        },
+        {
+          "code": "26",
+          "nom": "DRÔME"
+        },
+        {
+          "code": "3",
+          "nom": "ALLIER"
+        },
+        {
+          "code": "38",
+          "nom": "ISÈRE"
+        },
+        {
+          "code": "42",
+          "nom": "LOIRE"
+        },
+        {
+          "code": "43",
+          "nom": "HAUTE-LOIRE"
+        },
+        {
+          "code": "63",
+          "nom": "PUY-DE-DÔME"
+        },
+        {
+          "code": "69",
+          "nom": "RHÔNE"
+        },
+        {
+          "code": "7",
+          "nom": "ARDÈCHE"
+        },
+        {
+          "code": "73",
+          "nom": "SAVOIE"
+        },
+        {
+          "code": "74",
+          "nom": "HAUTE-SAVOIE"
+        }
+      ]
+    },
+    {
+      "nom": "BOURGOGNE-FRANCHE-COMTÉ",
+      "departements": [
+        {
+          "code": "21",
+          "nom": "CÔTE-D'OR"
+        },
+        {
+          "code": "25",
+          "nom": "DOUBS"
+        },
+        {
+          "code": "39",
+          "nom": "JURA"
+        },
+        {
+          "code": "58",
+          "nom": "NIÈVRE"
+        },
+        {
+          "code": "70",
+          "nom": "HAUTE-SAÔNE"
+        },
+        {
+          "code": "71",
+          "nom": "SAÔNE-ET-LOIRE"
+        },
+        {
+          "code": "89",
+          "nom": "YONNE"
+        },
+        {
+          "code": "90",
+          "nom": "TERRITOIRE DE BELFORT"
+        }
+      ]
+    },
+    {
+      "nom": "BRETAGNE",
+      "departements": [
+        {
+          "code": "22",
+          "nom": "CÔTES-D'ARMOR"
+        },
+        {
+          "code": "29",
+          "nom": "FINISTÈRE"
+        },
+        {
+          "code": "35",
+          "nom": "ILLE-ET-VILAINE"
+        },
+        {
+          "code": "56",
+          "nom": "MORBIHAN"
+        }
+      ]
+    },
+    {
+      "nom": "CENTRE-VAL DE LOIRE",
+      "departements": [
+        {
+          "code": "18",
+          "nom": "CHER"
+        },
+        {
+          "code": "28",
+          "nom": "EURE-ET-LOIR"
+        },
+        {
+          "code": "36",
+          "nom": "INDRE"
+        },
+        {
+          "code": "37",
+          "nom": "INDRE-ET-LOIRE"
+        },
+        {
+          "code": "41",
+          "nom": "LOIR-ET-CHER"
+        },
+        {
+          "code": "45",
+          "nom": "LOIRET"
+        }
+      ]
+    },
+    {
+      "nom": "CORSE",
+      "departements": [
+        {
+          "code": "2A",
+          "nom": "CORSE-DU-SUD"
+        },
+        {
+          "code": "2B",
+          "nom": "HAUTE-CORSE"
+        }
+      ]
+    },
+    {
+      "nom": "GRAND EST",
+      "departements": [
+        {
+          "code": "10",
+          "nom": "AUBE"
+        },
+        {
+          "code": "51",
+          "nom": "MARNE"
+        },
+        {
+          "code": "52",
+          "nom": "HAUTE-MARNE"
+        },
+        {
+          "code": "54",
+          "nom": "MEURTHE-ET-MOSELLE"
+        },
+        {
+          "code": "55",
+          "nom": "MEUSE"
+        },
+        {
+          "code": "57",
+          "nom": "MOSELLE"
+        },
+        {
+          "code": "67",
+          "nom": "BAS-RHIN"
+        },
+        {
+          "code": "68",
+          "nom": "HAUT-RHIN"
+        },
+        {
+          "code": "8",
+          "nom": "ARDENNES"
+        },
+        {
+          "code": "88",
+          "nom": "VOSGES"
+        }
+      ]
+    },
+    {
+      "nom": "GUADELOUPE",
+      "departements": [
+        {
+          "code": "971",
+          "nom": "GUADELOUPE"
+        }
+      ]
+    },
+    {
+      "nom": "GUYANE",
+      "departements": [
+        {
+          "code": "973",
+          "nom": "GUYANE"
+        }
+      ]
+    },
+    {
+      "nom": "HAUTS-DE-FRANCE",
+      "departements": [
+        {
+          "code": "2",
+          "nom": "AISNE"
+        },
+        {
+          "code": "59",
+          "nom": "NORD"
+        },
+        {
+          "code": "60",
+          "nom": "OISE"
+        },
+        {
+          "code": "62",
+          "nom": "PAS-DE-CALAIS"
+        },
+        {
+          "code": "80",
+          "nom": "SOMME"
+        }
+      ]
+    },
+    {
+      "nom": "LA RÉUNION",
+      "departements": [
+        {
+          "code": "974",
+          "nom": "LA RÉUNION"
+        }
+      ]
+    },
+    {
+      "nom": "MARTINIQUE",
+      "departements": [
+        {
+          "code": "972",
+          "nom": "MARTINIQUE"
+        }
+      ]
+    },
+    {
+      "nom": "MAYOTTE",
+      "departements": [
+        {
+          "code": "976",
+          "nom": "MAYOTTE"
+        }
+      ]
+    },
+    {
+      "nom": "NORMANDIE",
+      "departements": [
+        {
+          "code": "14",
+          "nom": "CALVADOS"
+        },
+        {
+          "code": "27",
+          "nom": "EURE"
+        },
+        {
+          "code": "50",
+          "nom": "MANCHE"
+        },
+        {
+          "code": "61",
+          "nom": "ORNE"
+        },
+        {
+          "code": "76",
+          "nom": "SEINE-MARITIME"
+        }
+      ]
+    },
+    {
+      "nom": "NOUVELLE-AQUITAINE",
+      "departements": [
+        {
+          "code": "16",
+          "nom": "CHARENTE"
+        },
+        {
+          "code": "17",
+          "nom": "CHARENTE-MARITIME"
+        },
+        {
+          "code": "19",
+          "nom": "CORRÈZE"
+        },
+        {
+          "code": "23",
+          "nom": "CREUSE"
+        },
+        {
+          "code": "24",
+          "nom": "DORDOGNE"
+        },
+        {
+          "code": "33",
+          "nom": "GIRONDE"
+        },
+        {
+          "code": "40",
+          "nom": "LANDES"
+        },
+        {
+          "code": "47",
+          "nom": "LOT-ET-GARONNE"
+        },
+        {
+          "code": "64",
+          "nom": "PYRÉNÉES-ATLANTIQUES"
+        },
+        {
+          "code": "79",
+          "nom": "DEUX-SÈVRES"
+        },
+        {
+          "code": "86",
+          "nom": "VIENNE"
+        },
+        {
+          "code": "87",
+          "nom": "HAUTE-VIENNE"
+        }
+      ]
+    },
+    {
+      "nom": "OCCITANIE",
+      "departements": [
+        {
+          "code": "11",
+          "nom": "AUDE"
+        },
+        {
+          "code": "12",
+          "nom": "AVEYRON"
+        },
+        {
+          "code": "30",
+          "nom": "GARD"
+        },
+        {
+          "code": "31",
+          "nom": "HAUTE-GARONNE"
+        },
+        {
+          "code": "32",
+          "nom": "GERS"
+        },
+        {
+          "code": "34",
+          "nom": "HÉRAULT"
+        },
+        {
+          "code": "46",
+          "nom": "LOT"
+        },
+        {
+          "code": "48",
+          "nom": "LOZÈRE"
+        },
+        {
+          "code": "65",
+          "nom": "HAUTES-PYRÉNÉES"
+        },
+        {
+          "code": "66",
+          "nom": "PYRÉNÉES-ORIENTALES"
+        },
+        {
+          "code": "81",
+          "nom": "TARN"
+        },
+        {
+          "code": "82",
+          "nom": "TARN-ET-GARONNE"
+        },
+        {
+          "code": "9",
+          "nom": "ARIÈGE"
+        }
+      ]
+    },
+    {
+      "nom": "PAYS DE LA LOIRE",
+      "departements": [
+        {
+          "code": "44",
+          "nom": "LOIRE-ATLANTIQUE"
+        },
+        {
+          "code": "49",
+          "nom": "MAINE-ET-LOIRE"
+        },
+        {
+          "code": "53",
+          "nom": "MAYENNE"
+        },
+        {
+          "code": "72",
+          "nom": "SARTHE"
+        },
+        {
+          "code": "85",
+          "nom": "VENDÉE"
+        }
+      ]
+    },
+    {
+      "nom": "PROVENCE-ALPES-CÔTE D'AZUR",
+      "departements": [
+        {
+          "code": "13",
+          "nom": "BOUCHES-DU-RHÔNE"
+        },
+        {
+          "code": "4",
+          "nom": "ALPES-DE-HAUTE-PROVENCE"
+        },
+        {
+          "code": "5",
+          "nom": "HAUTES-ALPES"
+        },
+        {
+          "code": "6",
+          "nom": "ALPES-MARITIMES"
+        },
+        {
+          "code": "83",
+          "nom": "VAR"
+        },
+        {
+          "code": "84",
+          "nom": "VAUCLUSE"
+        }
+      ]
+    },
+    {
+      "nom": "ÎLE-DE-FRANCE",
+      "departements": [
+        {
+          "code": "75",
+          "nom": "PARIS"
+        },
+        {
+          "code": "77",
+          "nom": "SEINE-ET-MARNE"
+        },
+        {
+          "code": "78",
+          "nom": "YVELINES"
+        },
+        {
+          "code": "91",
+          "nom": "ESSONNE"
+        },
+        {
+          "code": "92",
+          "nom": "HAUTS-DE-SEINE"
+        },
+        {
+          "code": "93",
+          "nom": "SEINE-SAINT-DENIS"
+        },
+        {
+          "code": "94",
+          "nom": "VAL-DE-MARNE"
+        },
+        {
+          "code": "95",
+          "nom": "VAL-D'OISE"
+        }
+      ]
+    }
+  ]
+}

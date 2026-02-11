@@ -49,16 +49,14 @@ DEFAULT_DUPLICATE_HANDLING: Final[Literal["skip", "replace"]] = "skip"
 LOG_LEVEL: Final[str] = "INFO"
 LOG_FORMAT: Final[str] = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 
-# Configuration Nominatim
-# URL de base de l'API Nominatim (peut être configurée via variable d'environnement)
-NOMINATIM_BASE_URL: str = settings.NOMINATIM_URL
-# User-Agent pour les requêtes HTTP (requis par la politique d'utilisation de Nominatim)
-NOMINATIM_USER_AGENT: str = settings.NOMINATIM_USER_AGENT
-# Rate limiting: délai minimum entre les requêtes en secondes
-NOMINATIM_RATE_LIMIT: Final[float] = 1.0  # 1 seconde entre les requêtes
-# Chemin du fichier de cache pour les résultats de géocodage
-NOMINATIM_CACHE_FILE: Final[Path] = DATA_DIR / "cache" / "geocoding_cache.json"
-# Nombre maximum de tentatives en cas d'erreur
-NOMINATIM_MAX_RETRIES: Final[int] = 3
-# Délai entre les tentatives (en secondes)
-NOMINATIM_RETRY_DELAY: Final[float] = 2.0
+# Configuration API Géo française
+# URL de base de l'API Géo française
+GEO_API_BASE_URL: Final[str] = "https://geo.api.gouv.fr/communes"
+# Chemin du fichier de cache pour les données des communes de l'API Géo
+GEO_API_CACHE_FILE: Final[Path] = DATA_DIR / "cache" / "geo_api_communes.json"
+# Force le rechargement des données de l'API Géo (utile pour les tests)
+GEO_API_FORCE_REFRESH: bool = False
+# Nombre maximum de tentatives en cas d'erreur pour l'API Géo
+GEO_API_MAX_RETRIES: Final[int] = 3
+# Délai entre les tentatives (en secondes) pour l'API Géo
+GEO_API_RETRY_DELAY: Final[float] = 5.0

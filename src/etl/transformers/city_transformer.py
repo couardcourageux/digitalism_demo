@@ -10,7 +10,7 @@ from typing import Iterator, Dict, Any, Optional, Tuple, List
 from src.etl.transformers.base_transformer import BaseTransformer
 from src.etl.utils.data_models import CityData
 from src.etl.utils.csv_helpers import get_csv_value, normalize_name
-from src.etl.services.geocoding import GeocodingService, GeocodingResult
+from src.etl.services.geo_api import GeoApiService, GeocodingResult
 
 
 class CityTransformer(BaseTransformer[CityData]):
@@ -23,20 +23,31 @@ class CityTransformer(BaseTransformer[CityData]):
     si elles sont disponibles dans le CSV.
     """
 
-    def __init__(self, enable_geocoding: bool = False):
+    def __init__(
+        self,
+        enable_geocoding: bool = False,
+        geocoding_service: Optional[GeoApiService] = None,
+    ):
         """
         Initialise le transformer de communes.
 
         Args:
             enable_geocoding: Si True, active le géocodage des villes sans coordonnées
+            geocoding_service: Service de géocodage à utiliser (GeoApiService).
+                              Si None, utilise GeoApiService par défaut.
         """
         super().__init__(component_name="city_transformer", entity_name="commune")
         self.enable_geocoding = enable_geocoding
-        self.geocoding_service: Optional[GeocodingService] = None
+        self.geocoding_service: Optional[GeoApiService] = None
 
         if self.enable_geocoding:
-            self.geocoding_service = GeocodingService()
-            self.logger.info("Service de géocodage activé")
+            if geocoding_service is not None:
+                self.geocoding_service = geocoding_service
+                service_name = type(geocoding_service).__name__
+                self.logger.info(f"Service de géocodage activé (service personnalisé: {service_name})")
+            else:
+                self.geocoding_service = GeoApiService()
+                self.logger.info("Service de géocodage activé (API Géo française)")
 
     def _extract_city_data(self, row: Dict[str, Any]) -> Optional[Tuple[str, str, str]]:
         """
@@ -131,9 +142,10 @@ class CityTransformer(BaseTransformer[CityData]):
         result: Optional[GeocodingResult] = self.geocoding_service.geocode(city_name, code_postal)
 
         if result:
+            service_name = type(self.geocoding_service).__name__
             self.logger.info(
                 f"Géocodage réussi pour {city_name} ({code_postal}): "
-                f"{result.latitude}, {result.longitude} (source: {result.source})"
+                f"{result.latitude}, {result.longitude} (source: {result.source}, service: {service_name})"
             )
             return result.latitude, result.longitude
         else:

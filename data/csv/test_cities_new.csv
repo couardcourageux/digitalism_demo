@@ -1,0 +1,7 @@
+code_commune_INSEE,nom_commune_postal,code_postal,libelle_acheminement,ligne_5,latitude,longitude,code_commune,article,nom_commune,nom_commune_complet,code_departement,nom_departement,code_region,nom_region
+75056,Paris,75116,Paris,,,75,,Paris,Paris,75,Paris,11,Île-de-France
+69123,Lyon,69009,Lyon,,,69,,Lyon,Lyon,69,Rhône-Alpes,84,Auvergne-Rhône-Alpes
+13055,Marseille,13008,Marseille,,,13,,Marseille,Marseille,13,Bouches-du-Rhône,93,Provence-Alpes-Côte d'Azur
+31063,Toulouse,31100,Toulouse,,,31,,Toulouse,Toulouse,31,Haute-Garonne,76,Occitanie
+33063,Bordeaux,33100,Bordeaux,,,33,,Bordeaux,Bordeaux,33,Gironde,75,Nouvelle-Aquitaine
+59044,Lille,59030,Lille,,,59,,Lille,Lille,59,Nord,32,Hauts-de-France

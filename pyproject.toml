@@ -11,4 +11,8 @@ dependencies = [
     "pydantic-settings>=2.0.0",
     "psycopg2-binary>=2.9.11",
     "alembic>=1.13.0",
+    "requests>=2.31.0",
 ]
+
+[tool.pytest.ini_options]
+timeout = 60
