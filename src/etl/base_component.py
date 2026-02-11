@@ -56,7 +56,7 @@ class BaseETLComponent:
             self.logger.info(message)
         elif self._entity_name and self._component_type:
             self.logger.info(
-                f"Début de l'opération {_component_type} sur {self._entity_name}"
+                f"Début de l'opération {self._component_type} sur {self._entity_name}"
             )
         else:
             self.logger.info("Début de l'opération")
@@ -70,10 +70,13 @@ class BaseETLComponent:
             message: Message personnalisé (optionnel)
         """
         if message:
+            # Message personnalisé fourni, l'utiliser tel quel
             self.logger.info(message)
         elif self._entity_name:
+            # Utiliser le nom de l'entité pour un message plus spécifique
             self.logger.info(f"{count} {self._entity_name}(s) traité(s) avec succès")
         else:
+            # Fallback: message générique sans nom d'entité
             self.logger.info(f"{count} élément(s) traité(s) avec succès")
 
     def _log_error(self, error: Exception, message: Optional[str] = None) -> None:

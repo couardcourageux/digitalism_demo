@@ -50,7 +50,6 @@ class CSVReader(BaseExtractor):
         self.encoding = encoding or CSV_ENCODING
         self.delimiter = delimiter or CSV_DELIMITER
         self.quotechar = quotechar or CSV_QUOTECHAR
-        self._file_handle = None
 
     def read(self) -> Iterator[Dict[str, Any]]:
         """
@@ -121,7 +120,4 @@ class CSVReader(BaseExtractor):
             exc_val: Valeur de l'exception
             exc_tb: Traceback de l'exception
         """
-        # Fermer le fichier si ouvert
-        if self._file_handle is not None:
-            self._file_handle.close()
-            self._file_handle = None
+        pass

@@ -32,7 +32,6 @@ from src.etl.config import (
     CSV_COLUMN_DEPARTMENT,
     CSV_COLUMN_CODE_DEPARTMENT,
     BATCH_SIZE,
-    SKIP_DUPLICATES,
 )
 
 # Base Component
@@ -49,6 +48,7 @@ from src.etl.utils import (
     get_etl_logger,
     RegionData,
     DepartmentData,
+    CityData,
     clean_string,
     validate_csv_row,
     get_csv_value,
@@ -65,7 +65,6 @@ __all__ = [
     "CSV_COLUMN_DEPARTMENT",
     "CSV_COLUMN_CODE_DEPARTMENT",
     "BATCH_SIZE",
-    "SKIP_DUPLICATES",
     # Base Component
     "BaseETLComponent",
     # Extractors
@@ -79,6 +78,7 @@ __all__ = [
     "get_etl_logger",
     "RegionData",
     "DepartmentData",
+    "CityData",
     "clean_string",
     "validate_csv_row",
     "get_csv_value",

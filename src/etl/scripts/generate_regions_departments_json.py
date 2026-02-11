@@ -15,58 +15,23 @@ import json
 from pathlib import Path
 from typing import Dict, List, Any, Set, Tuple
 
+from src.etl.utils.csv_helpers import clean_string, normalize_name, get_csv_value
+from src.etl.utils.logger import get_etl_logger
+
 # Configuration
 DATA_DIR: Path = Path("data")
 CSV_FILE_PATH: Path = DATA_DIR / "csv" / "communes_departements.csv"
 CSV_ENCODING: str = "utf-8"
 CSV_DELIMITER: str = ","
 CSV_QUOTECHAR: str = '"'
-DATA_DIR: Path = Path("data")
 
 # Noms des colonnes attendus dans le CSV
 CSV_COLUMN_REGION: str = "nom_region"
 CSV_COLUMN_DEPARTMENT: str = "nom_departement"
 CSV_COLUMN_CODE_DEPARTMENT: str = "code_departement"
 
-
-def clean_string(value: str) -> str:
-    """
-    Nettoie une chaîne de caractères en supprimant les espaces inutiles.
-
-    Args:
-        value: La chaîne à nettoyer
-
-    Returns:
-        La chaîne nettoyée
-    """
-    return value.strip() if value else ""
-
-
-def normalize_name(value: str) -> str:
-    """
-    Normalise un nom en le mettant en majuscules et en nettoyant les espaces.
-
-    Args:
-        value: Le nom à normaliser
-
-    Returns:
-        Le nom normalisé en majuscules
-    """
-    return clean_string(value).upper()
-
-
-def get_csv_value(row: Dict[str, str], column_name: str) -> str:
-    """
-    Récupère une valeur d'une ligne CSV en gérant les colonnes manquantes.
-
-    Args:
-        row: Dictionnaire représentant une ligne du CSV
-        column_name: Nom de la colonne à récupérer
-
-    Returns:
-        La valeur nettoyée ou une chaîne vide si la colonne n'existe pas
-    """
-    return clean_string(row.get(column_name, ""))
+# Logger
+logger = get_etl_logger("generate_regions_departments_json")
 
 
 def validate_data(regions_data: List[Dict[str, Any]]) -> bool:
@@ -119,7 +84,7 @@ def read_csv(file_path: Path) -> List[Dict[str, str]]:
     if not file_path.exists():
         raise FileNotFoundError(f"Le fichier CSV n'existe pas: {file_path}")
 
-    print(f"Lecture du fichier CSV: {file_path}")
+    logger.info(f"Lecture du fichier CSV: {file_path}")
 
     rows = []
     with open(file_path, "r", encoding=CSV_ENCODING, newline="") as csvfile:
@@ -133,13 +98,13 @@ def read_csv(file_path: Path) -> List[Dict[str, str]]:
         if not reader.fieldnames:
             raise ValueError("Le fichier CSV ne contient pas d'en-tête")
 
-        print(f"Colonnes détectées: {list(reader.fieldnames)}")
+        logger.info(f"Colonnes détectées: {list(reader.fieldnames)}")
 
         # Lire les lignes
         for row_number, row in enumerate(reader, start=1):
             rows.append(row)
 
-        print(f"Fin de la lecture du fichier CSV ({row_number} lignes lues)")
+        logger.info(f"Fin de la lecture du fichier CSV ({row_number} lignes lues)")
 
     return rows
 
@@ -154,7 +119,7 @@ def extract_regions(rows: List[Dict[str, str]]) -> List[str]:
     Returns:
         Liste triée des noms de régions uniques
     """
-    print("\n--- Extraction des régions ---")
+    logger.info("--- Extraction des régions ---")
 
     region_names: Set[str] = set()
 
@@ -166,7 +131,7 @@ def extract_regions(rows: List[Dict[str, str]]) -> List[str]:
                 region_names.add(normalized_name)
 
     regions = sorted(region_names)
-    print(f"✓ {len(regions)} région(s) trouvée(s)")
+    logger.info(f"✓ {len(regions)} région(s) trouvée(s)")
 
     return regions
 
@@ -181,7 +146,7 @@ def extract_departments(rows: List[Dict[str, str]]) -> List[Tuple[str, str, str]
     Returns:
         Liste de tuples (code_departement, nom_departement, nom_region)
     """
-    print("\n--- Extraction des départements ---")
+    logger.info("--- Extraction des départements ---")
 
     # Utiliser un dictionnaire pour stocker les départements uniques
     # Clé: (code_departement, region_name)
@@ -194,7 +159,7 @@ def extract_departments(rows: List[Dict[str, str]]) -> List[Tuple[str, str, str]
 
         # Vérifier que toutes les colonnes requises sont présentes
         if not department_name or not code_departement or not region_name:
-            print(f"  ⚠ Ligne ignorée: données incomplètes "
+            logger.warning(f"Ligne ignorée: données incomplètes "
                   f"(department={department_name}, code={code_departement}, region={region_name})")
             continue
 
@@ -204,7 +169,7 @@ def extract_departments(rows: List[Dict[str, str]]) -> List[Tuple[str, str, str]
         normalized_region = normalize_name(region_name)
 
         if not normalized_name or not normalized_code or not normalized_region:
-            print(f"  ⚠ Ligne ignorée: données invalides après normalisation "
+            logger.warning(f"Ligne ignorée: données invalides après normalisation "
                   f"(department={normalized_name}, code={normalized_code}, region={normalized_region})")
             continue
 
@@ -216,7 +181,7 @@ def extract_departments(rows: List[Dict[str, str]]) -> List[Tuple[str, str, str]
             departments_dict[dept_key] = (normalized_code, normalized_name, normalized_region)
 
     departments = list(departments_dict.values())
-    print(f"✓ {len(departments)} département(s) trouvé(s)")
+    logger.info(f"✓ {len(departments)} département(s) trouvé(s)")
 
     return departments
 
@@ -235,7 +200,7 @@ def generate_json_structure(
     Returns:
         Liste des régions avec leurs départements au format JSON
     """
-    print("\n--- Génération de la structure JSON ---")
+    logger.info("--- Génération de la structure JSON ---")
 
     # Créer un dictionnaire pour regrouper les départements par région
     regions_dict: Dict[str, Dict[str, Any]] = {}
@@ -255,7 +220,7 @@ def generate_json_structure(
                 "nom": name
             })
         else:
-            print(f"  ⚠ Attention: Département '{name}' ({code}) "
+            logger.warning(f"Département '{name}' ({code}) "
                   f"a une région '{region_name}' qui n'existe pas")
 
     # Trier les départements par code dans chaque région
@@ -280,9 +245,9 @@ def main():
     4. Valide les données
     5. Écrit le JSON dans data/regions_departments.json
     """
-    print("=" * 60)
-    print("Génération du JSON des régions et départements")
-    print("=" * 60)
+    logger.info("=" * 60)
+    logger.info("Génération du JSON des régions et départements")
+    logger.info("=" * 60)
 
     # Étape 1: Lecture du fichier CSV
     rows = read_csv(CSV_FILE_PATH)
@@ -297,18 +262,18 @@ def main():
     regions_data = generate_json_structure(regions, departments)
 
     # Étape 5: Validation des données
-    print("\n--- Validation des données ---")
+    logger.info("--- Validation des données ---")
     try:
         validate_data(regions_data)
-        print("✓ Validation réussie")
+        logger.info("✓ Validation réussie")
     except ValueError as e:
-        print(f"✗ Erreur de validation: {e}")
+        logger.error(f"✗ Erreur de validation: {e}")
         raise
 
     # Étape 6: Écriture du fichier JSON
     output_path = DATA_DIR / "regions_departments.json"
-    print(f"\n--- Écriture du fichier JSON ---")
-    print(f"Chemin: {output_path}")
+    logger.info("--- Écriture du fichier JSON ---")
+    logger.info(f"Chemin: {output_path}")
 
     # Créer le dossier data/ s'il n'existe pas
     output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -323,17 +288,17 @@ def main():
         )
 
     # Résumé
-    print("\n" + "=" * 60)
-    print("Résumé:")
-    print(f"  - {len(regions)} région(s) trouvée(s)")
-    print(f"  - {len(departments)} département(s) trouvé(s)")
-    print(f"  - Fichier JSON généré: {output_path}")
-    print("=" * 60)
+    logger.info("=" * 60)
+    logger.info("Résumé:")
+    logger.info(f"  - {len(regions)} région(s) trouvée(s)")
+    logger.info(f"  - {len(departments)} département(s) trouvé(s)")
+    logger.info(f"  - Fichier JSON généré: {output_path}")
+    logger.info("=" * 60)
 
 
 if __name__ == "__main__":
     try:
         main()
     except Exception as e:
-        print(f"\nErreur lors de l'exécution: {e}")
+        logger.error(f"Erreur lors de l'exécution: {e}")
         raise

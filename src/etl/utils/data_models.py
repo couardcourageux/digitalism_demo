@@ -48,3 +48,28 @@ class DepartmentData:
 
     def __str__(self) -> str:
         return f"DepartmentData(name='{self.name}', code_departement='{self.code_departement}', region_name='{self.region_name}')"
+
+
+@dataclass
+class CityData:
+    """
+    Modèle de données intermédiaire pour une commune.
+
+    Ce modèle représente une commune extraite du CSV et transformée
+    avant d'être chargée en base de données via CityCreate.
+
+    Attributes:
+        name: Nom de la commune (ex: "PARIS")
+        code_postal: Code postal de la commune (ex: "75001")
+        department_name: Nom du département (ex: "PARIS")
+        latitude: Latitude GPS de la commune (optionnel)
+        longitude: Longitude GPS de la commune (optionnel)
+    """
+    name: str
+    code_postal: str
+    department_name: Optional[str] = None
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
+
+    def __str__(self) -> str:
+        return f"CityData(name='{self.name}', code_postal='{self.code_postal}', department_name='{self.department_name}')"

@@ -7,7 +7,7 @@ avant leur chargement en base de données.
 """
 
 from abc import ABC, abstractmethod
-from typing import Iterator, Dict, Any, TypeVar, Generic, Optional
+from typing import Iterator, Dict, Any, TypeVar, Generic, Optional, Callable
 
 from src.etl.base_component import BaseETLComponent
 
@@ -73,11 +73,16 @@ class BaseTransformer(BaseETLComponent, ABC, Generic[T]):
             ValueError: Si le résultat est vide
         """
         if not result:
-            error_msg = f"Aucun{'' if self._entity_name and self._entity_name.endswith('e') else 'e'} {self._entity_name or 'donnée'} trouvé(e) dans les données"
+            # Gestion de l'accord grammatical en français:
+            # - "Aucun" si le nom ne se termine pas par 'e' (ex: région)
+            # - "Aucune" si le nom se termine par 'e' (ex: commune)
+            suffix = '' if self._entity_name and self._entity_name.endswith('e') else 'e'
+            entity_name = self._entity_name or 'donnée'
+            error_msg = f"Aucun{suffix} {entity_name} trouvé(e) dans les données"
             self.logger.error(error_msg)
             raise ValueError(error_msg)
 
-    def _log_transformed_items(self, items: list[T], format_func: Optional[callable] = None) -> None:
+    def _log_transformed_items(self, items: list[T], format_func: Optional[Callable] = None) -> None:
         """
         Log les éléments transformés.
 

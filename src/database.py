@@ -38,3 +38,18 @@ def get_db() -> Generator[Session, None, None]:
         raise
     finally:
         db.close()
+
+
+def get_etl_db() -> Session:
+    """
+    Crée une session de base de données pour les scripts ETL.
+    
+    Returns:
+        Session: Session SQLAlchemy active pour les scripts ETL.
+    
+    Note:
+        Contrairement à get_db(), cette fonction ne gère pas automatiquement
+        le commit/rollback. Le script ETL doit gérer ces opérations explicitement.
+        La session doit être fermée manuellement avec session.close().
+    """
+    return SessionLocal()

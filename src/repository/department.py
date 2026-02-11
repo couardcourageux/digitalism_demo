@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Dict
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 from src.model.department import Department
@@ -24,3 +24,23 @@ class DepartmentRepository(BaseRepository[Department, DepartmentCreate, Departme
             Department.deleted_at.is_(None)
         )
         return self.db.execute(stmt).scalar_one_or_none()
+
+    def get_by_codes(self, codes_departement: List[str]) -> Dict[str, Department]:
+        """
+        Récupère plusieurs départements par leurs codes.
+
+        Args:
+            codes_departement: Liste des codes départements à rechercher
+
+        Returns:
+            Dictionnaire avec les codes départements comme clés et les départements comme valeurs
+        """
+        if not codes_departement:
+            return {}
+
+        stmt = select(Department).where(
+            Department.code_departement.in_(codes_departement),
+            Department.deleted_at.is_(None)
+        )
+        departments = list(self.db.execute(stmt).scalars().all())
+        return {dept.code_departement: dept for dept in departments}

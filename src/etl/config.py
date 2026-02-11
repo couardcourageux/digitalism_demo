@@ -6,7 +6,7 @@ y compris les chemins des fichiers, l'encodage et les paramètres de traitement.
 """
 
 from pathlib import Path
-from typing import Final
+from typing import Final, Literal
 
 
 # Chemins des fichiers
@@ -26,9 +26,20 @@ CSV_COLUMN_REGION: Final[str] = "nom_region"
 CSV_COLUMN_DEPARTMENT: Final[str] = "nom_departement"
 CSV_COLUMN_CODE_DEPARTMENT: Final[str] = "code_departement"
 
+# Colonnes pour les communes
+CSV_COLUMN_CITY: Final[str] = "nom_commune"
+CSV_COLUMN_CITY_CODE_POSTAL: Final[str] = "code_postal"
+CSV_COLUMN_CITY_LATITUDE: Final[str] = "latitude"
+CSV_COLUMN_CITY_LONGITUDE: Final[str] = "longitude"
+
 # Configuration du traitement
 BATCH_SIZE: Final[int] = 100  # Nombre d'objets à créer par batch
-SKIP_DUPLICATES: Final[bool] = True  # Ignorer les doublons lors de l'insertion
+
+# Configuration de la gestion des doublons
+DEFAULT_DUPLICATE_HANDLING: Final[Literal["skip", "replace"]] = "skip"
+# Options de gestion des doublons:
+# - "skip": Ignorer les communes existantes (défaut)
+# - "replace": Remplacer les communes existantes
 
 # Logging
 LOG_LEVEL: Final[str] = "INFO"
