@@ -25,10 +25,7 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
-*.swp
-*.swo
-*~
-
+tests/
 # Windows
 Thumbs.db
 Thumbs.db:encryptable
@@ -44,12 +41,8 @@ $RECYCLE.BIN/
 *.msp
 *.lnk
 *.url
-*.lnk
-*.url
 
 # Linux
-*~
-.nfs*
 .fuse_hidden*
 .directory
 .Trash-*
@@ -153,23 +146,18 @@ coverage.xml
 .hypothesis/
 .pytest_cache/
 cover/
-*.cover
-.hypothesis/
-.pytest_cache/
 
 # Translations
 *.mo
 *.pot
 
 # Environments
-.env
 .venv
 env/
 venv/
 ENV/
 env.bak/
 venv.bak/
-.venv/
 virtualenv/
 
 # mypy
@@ -221,11 +209,6 @@ secrets/
 credentials/
 config/secrets/
 
-# Logs
-*.log
-logs/
-*.log.*
-
 # Base de données locales
 *.db
 *.sqlite
@@ -242,15 +225,6 @@ temp/
 *.swp
 *.swo
 
-# OS generated files
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
-
 # ============================================
 # Fichiers spécifiques au projet
 # ============================================
@@ -262,3 +236,6 @@ Thumbs.db
 
 # Documentation (exclue du versioning)
 docs/
+
+# Reviews de codebase (exclues du versioning)
+reviews/

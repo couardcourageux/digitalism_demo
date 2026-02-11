@@ -9,7 +9,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - ./data/docker/postgres:/var/lib/postgresql/data
     healthcheck:
@@ -22,7 +22,7 @@ services:
       - digitalism_network
 
   pgadmin:
-    image: dpage/pgadmin4:latest
+    image: dpage/pgadmin4:8.5
     container_name: digitalism_pgadmin
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@digitalism.com
